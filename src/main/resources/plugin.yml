@@ -1,0 +1,5 @@
+name: TablistManager
+version: ${project.version}
+main: me.ernestorb.tablistmanager.Tablist
+depend: [ ProtocolLib ]
+authors: [ ErnestoRB ]
