@@ -1,26 +1,127 @@
 package me.ernestorb.tablistmanager.listener;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
+import me.ernestorb.tablistmanager.loaders.ConfigLoader;
 import me.ernestorb.tablistmanager.packets.TablistAddPlayerPacket;
 import me.ernestorb.tablistmanager.packets.TablistRemovePlayerPacket;
+import me.ernestorb.tablistmanager.packets.fake.FakePlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.world.WorldLoadEvent;
+import org.bukkit.event.world.WorldUnloadEvent;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class BukkitListener implements Listener {
 
 
+    private final ConfigLoader configLoader;
+    private final HashMap<World,List<FakePlayer>> worldPacketMap = new HashMap<>();
+
+    public BukkitListener(ConfigLoader configLoader) {
+        this.configLoader = configLoader;
+        if(this.configLoader.isTablistPerWorld()){
+            Bukkit.getWorlds().forEach(world -> worldPacketMap.put(world, generateFakePlayerList(this.configLoader.getFakePlayersCount())));
+        }
+    }
+
+    @EventHandler
+    public void onWorldLoad(WorldLoadEvent event){
+        if(this.configLoader.isTablistPerWorld()) {
+            this.worldPacketMap.put(event.getWorld(), generateFakePlayerList(this.configLoader.getFakePlayersCount()));
+        }
+    }
+
+    @EventHandler
+    public void onWorldUnload(WorldUnloadEvent event){
+        if(this.configLoader.isTablistPerWorld()) {
+            this.worldPacketMap.remove(event.getWorld());
+        }
+    }
+
+    @EventHandler
+    public void onPlayerJoinEventForFakePlayerPurposes(PlayerJoinEvent event){
+        Player p = event.getPlayer();
+        World world = p.getWorld();
+        if(this.configLoader.isTablistPerWorld()){
+            List<FakePlayer> fakePlayers =  this.worldPacketMap.get(world);// remove one from new World
+            FakePlayer removedFakePlayer = fakePlayers.remove(0);
+            world.getPlayers().forEach(player -> {
+                try {
+                    removedFakePlayer.getTablistRemovePacket().sendPacketOnce(player);
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            });
+            fakePlayers.forEach(fakePlayer -> {
+                try {
+                    fakePlayer.getTablistAddPacket().sendPacketOnce(p);
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+    }
+
+
+    @EventHandler
+    public void onPlayerChangeWorldEventForFakePlayerPurposes(PlayerChangedWorldEvent evt) {
+        Player evtPlayer = evt.getPlayer();
+        World fromWorld = evt.getFrom();
+        World toWorld = evt.getPlayer().getWorld();
+        if(this.configLoader.isTablistPerWorld()) {
+            List<FakePlayer> fakePlayersToRemove = this.worldPacketMap.get(fromWorld); // old world
+            List<FakePlayer> fakePlayersToAdd = this.worldPacketMap.get(toWorld); // new world
+            FakePlayer removedFakePlayer = fakePlayersToAdd.remove(0); // remove one from new World
+            toWorld.getPlayers().forEach(player -> { // update tablist from players from old world
+                try {
+                    removedFakePlayer.getTablistRemovePacket().sendPacketOnce(player);
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            });
+            fakePlayersToRemove.forEach(fakePlayer -> {// remove FakePlayers of old World to event Player
+                try {
+                    fakePlayer.getTablistRemovePacket().sendPacketOnce(evtPlayer);
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            });
+            fakePlayersToAdd.forEach(fakePlayer -> { // add FakePlayers of new World to event Player
+                try {
+                    fakePlayer.getTablistAddPacket().sendPacketOnce(evtPlayer);
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            });
+            FakePlayer addedFakePlayer = FakePlayer.randomFakePlayer(); // create new FakePlayer for old world
+            fromWorld.getPlayers().forEach(player -> { // send packet to players from that world
+                try {
+                    addedFakePlayer.getTablistAddPacket().sendPacketOnce(player);
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            });
+        } else {
+
+        }
+    }
+
+
+
     @EventHandler
     public void onPlayerChangeWorldEvent(PlayerChangedWorldEvent evt) {
+        if(!this.configLoader.isTablistPerWorld()){
+            return;
+        }
         Player evtPlayer = evt.getPlayer();
         World fromWorld = evt.getFrom();
         World toWorld = evt.getPlayer().getWorld();
@@ -59,6 +160,14 @@ public class BukkitListener implements Listener {
         }
 
 
+    }
+
+    private static List<FakePlayer> generateFakePlayerList(int size){
+        List<FakePlayer> list = new ArrayList<>();
+        for(int i=0;i<size;i++){
+            list.add(FakePlayer.randomFakePlayer());
+        }
+        return list;
     }
 
 }

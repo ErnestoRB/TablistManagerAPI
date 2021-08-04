@@ -20,13 +20,12 @@ public final class Tablist extends JavaPlugin {
     @Override
     public void onEnable() {
         this.saveDefaultConfig();
+        this.getCommand("test").setExecutor(new TestCommand());
         this.tablistHandler = new TablistHandler(this);
         ProtocolManager manager = ProtocolLibrary.getProtocolManager();
         this.configLoader = new ConfigLoader(this.getConfig());
-        if(this.configLoader.isTablistPerWorld()) {
-            manager.addPacketListener(new PacketListener(this, ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO));
-            this.getServer().getPluginManager().registerEvents(new BukkitListener(),this);
-        }
+        manager.addPacketListener(new PacketListener(this, ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO));
+        this.getServer().getPluginManager().registerEvents(new BukkitListener(this.getConfigLoader()),this);
     }
 
     @Override
@@ -37,4 +36,7 @@ public final class Tablist extends JavaPlugin {
         return tablistHandler;
     }
 
+    public ConfigLoader getConfigLoader() {
+        return configLoader;
+    }
 }
