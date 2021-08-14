@@ -8,6 +8,8 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import me.ernestorb.tablistmanager.loaders.ConfigLoader;
+import me.ernestorb.tablistmanager.loaders.LatencyEnum;
 import me.ernestorb.tablistmanager.packets.PacketSender;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -25,8 +27,9 @@ public class TablistRemoveFakePlayerPacket extends FakePlayerPackets  {
         PacketContainer packet = this.getProtocolManager().createPacket(PacketType.Play.Server.PLAYER_INFO);
         packet.getPlayerInfoAction().write(0, EnumWrappers.PlayerInfoAction.REMOVE_PLAYER);
         List<PlayerInfoData> playerInfoDataList = packet.getPlayerInfoDataLists().writeDefaults().read(0);
-        playerInfoDataList.add(
-                new PlayerInfoData(new WrappedGameProfile(uuid,playerName),-1, EnumWrappers.NativeGameMode.fromBukkit(GameMode.CREATIVE), WrappedChatComponent.fromText(displayText))
+        WrappedGameProfile gameProfile = new WrappedGameProfile(uuid,playerName);
+        playerInfoDataList.add( // latency here isnt important
+                new PlayerInfoData(FakePlayerPackets.changeGameProfileSkin(gameProfile), ConfigLoader.getDefaultLatency().getLatency() + 100, EnumWrappers.NativeGameMode.fromBukkit(GameMode.CREATIVE), WrappedChatComponent.fromText(displayText))
         );
         packet.getPlayerInfoDataLists().write(0,playerInfoDataList);
         this.setPacket(packet);

@@ -22,8 +22,10 @@ public final class TablistManager {
     private YamlConfiguration configFile;
     private TablistHandler tablistHandler;
     private ConfigLoader configLoader;
+    private JavaPlugin plugin;
 
     public TablistManager(JavaPlugin plugin) {
+        this.plugin = plugin;
         this.tablistHandler = new TablistHandler(plugin);
         ProtocolManager manager = ProtocolLibrary.getProtocolManager();
         this.dataFolder = plugin.getDataFolder();
@@ -37,10 +39,16 @@ public final class TablistManager {
         System.out.println("Información cargada");
 
         this.configLoader = new ConfigLoader(this.configFile);
-        if(this.configLoader.isTablistPerWorld()) {
-            manager.addPacketListener(new PacketListener(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO));
-            plugin.getServer().getPluginManager().registerEvents(new BukkitListener(), plugin);
-        }
+        manager.addPacketListener(new PacketListener(this, ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO));
+        plugin.getServer().getPluginManager().registerEvents(new BukkitListener(this.getConfigLoader()), plugin);
+    }
+
+    public JavaPlugin getPlugin() {
+        return plugin;
+    }
+
+    public ConfigLoader getConfigLoader() {
+        return configLoader;
     }
 
     public TablistHandler getTablistHandler() {

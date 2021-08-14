@@ -6,17 +6,17 @@ public class ConfigLoader {
 
     private FileConfiguration file;
 
-    private boolean tablistPerWorld = false;
+    private boolean tablistPerWorld;
     private boolean realLatency = false;
-    private final short fakePlayersCount = 10;
-    private LatencyEnum defaultLatency = LatencyEnum.ONE;
+    private int fillUntil;
+    private boolean fillWithFakePlayers;
+    private static LatencyEnum defaultLatency = LatencyEnum.ONE;
 
     public ConfigLoader(FileConfiguration config) {
         if(config==null){
             throw new NullPointerException("No debe ser nulo el archivo!");
         }
         this.file = config;
-
         this.loadFields();
     }
 
@@ -28,18 +28,24 @@ public class ConfigLoader {
         } else {
             this.defaultLatency = (LatencyEnum) this.file.get("defaultLatency");
         }
+        this.fillWithFakePlayers = this.file.getBoolean("fillWithFakePlayers");
+        this.fillUntil = this.file.getInt("fillUntil");
     }
 
     public boolean isTablistPerWorld() {
         return tablistPerWorld;
     }
 
-    public LatencyEnum getDefaultLatency() {
+    public static LatencyEnum getDefaultLatency() {
         return defaultLatency;
     }
 
-    public short getFakePlayersCount() {
-        return fakePlayersCount;
+    public int getFillUntil() {
+        return fillUntil;
+    }
+
+    public boolean isFillWithFakePlayers() {
+        return fillWithFakePlayers;
     }
 
     public boolean isRealLatency() {

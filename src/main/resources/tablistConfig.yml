@@ -1,2 +1,4 @@
 tablistPerWorld: true
 useRealLatency: false
+fillWithFakePlayers: false
+fillUntil: 21

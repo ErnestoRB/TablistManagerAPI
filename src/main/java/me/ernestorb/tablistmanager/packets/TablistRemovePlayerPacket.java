@@ -8,6 +8,7 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import me.ernestorb.tablistmanager.loaders.ConfigLoader;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
@@ -24,8 +25,8 @@ public class TablistRemovePlayerPacket implements PacketSender{
         packet.getPlayerInfoAction().write(0, EnumWrappers.PlayerInfoAction.REMOVE_PLAYER);
         List<PlayerInfoData> playerInfoDataList = packet.getPlayerInfoDataLists().writeDefaults().read(0);
         for(Player player : playersToAdd) {
-            playerInfoDataList.add(
-                    new PlayerInfoData(WrappedGameProfile.fromPlayer(player),-1, EnumWrappers.NativeGameMode.fromBukkit(player.getGameMode()), WrappedChatComponent.fromText(player.getDisplayName()))
+            playerInfoDataList.add( // latency isnt important!
+                    new PlayerInfoData(WrappedGameProfile.fromPlayer(player), ConfigLoader.getDefaultLatency().getLatency(), EnumWrappers.NativeGameMode.fromBukkit(player.getGameMode()), WrappedChatComponent.fromText(player.getDisplayName()))
             );
         }
         packet.getPlayerInfoDataLists().write(0,playerInfoDataList);
@@ -36,7 +37,7 @@ public class TablistRemovePlayerPacket implements PacketSender{
         packet.getPlayerInfoAction().write(0, EnumWrappers.PlayerInfoAction.REMOVE_PLAYER);
         List<PlayerInfoData> playerInfoDataList = packet.getPlayerInfoDataLists().writeDefaults().read(0);
             playerInfoDataList.add(
-                    new PlayerInfoData(WrappedGameProfile.fromPlayer(player),-1, EnumWrappers.NativeGameMode.fromBukkit(player.getGameMode()), WrappedChatComponent.fromText(player.getDisplayName()))
+                    new PlayerInfoData(WrappedGameProfile.fromPlayer(player),ConfigLoader.getDefaultLatency().getLatency(), EnumWrappers.NativeGameMode.fromBukkit(player.getGameMode()), WrappedChatComponent.fromText(player.getDisplayName()))
             );
         packet.getPlayerInfoDataLists().write(0,playerInfoDataList);
     }
