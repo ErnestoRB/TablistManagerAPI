@@ -8,6 +8,7 @@ it should be multiversion (only tested on spigot API 1.8.8). It has native suppo
 First, you need to download the source, build jar, and then install it on your repository.
 The API needs an existing plugin to work, so you need to code one.
 Next, add this to your POM.
+NOTE: You must use maven shade plugin to add all the code of ths API on your plugin uber jar.
 
 ```
 <dependencies>
