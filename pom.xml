@@ -35,6 +35,13 @@
             </resource>
         </resources>
     </build>
+    <distributionManagement>
+        <repository>
+            <id>nexus-snapshots</id>
+            <name>Royalmind Network repo</name>
+            <url>https://packages.royalmind.net/repository/maven-snapshots/</url>
+        </repository>
+    </distributionManagement>
 
     <repositories>
         <repository>

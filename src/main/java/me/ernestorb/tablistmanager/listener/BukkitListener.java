@@ -1,6 +1,7 @@
 package me.ernestorb.tablistmanager.listener;
 
 import me.ernestorb.tablistmanager.loaders.ConfigLoader;
+import me.ernestorb.tablistmanager.packets.PacketSender;
 import me.ernestorb.tablistmanager.packets.TablistAddPlayerPacket;
 import me.ernestorb.tablistmanager.packets.TablistRemovePlayerPacket;
 import me.ernestorb.tablistmanager.packets.fake.FakePlayer;
@@ -19,7 +20,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class BukkitListener implements Listener {
 
@@ -35,7 +35,7 @@ public class BukkitListener implements Listener {
                 Bukkit.getWorlds().forEach(world -> worldPacketMap.put(world, generateFakePlayerList(this.configLoader.getFillUntil())));
                 // generate a FakePlayerList for each world
             } else {
-                globalPacketList = generateFakePlayerList(this.configLoader.getFillUntil());
+                this.globalPacketList = generateFakePlayerList(this.configLoader.getFillUntil());
             }
         }
     }
@@ -177,8 +177,6 @@ public class BukkitListener implements Listener {
                 }
             });
 
-        } else {
-
         }
     }
 
@@ -193,28 +191,33 @@ public class BukkitListener implements Listener {
         World fromWorld = evt.getFrom();
         World toWorld = evt.getPlayer().getWorld();
 
+        PacketSender tablistRemovePacket = new TablistRemovePlayerPacket(evtPlayer);
+        PacketSender tablistAddPacket = new TablistAddPlayerPacket(evtPlayer);
+
         // Remove player to old world players
-        List<Player> playersOnFromWorld = Bukkit.getOnlinePlayers().stream().filter(player -> player.getWorld().equals(fromWorld)).collect(Collectors.toList());
+        List<Player> playersOnFromWorld = fromWorld.getPlayers();
         playersOnFromWorld.forEach(player -> {
             try {
-                new TablistRemovePlayerPacket(evtPlayer).sendPacketOnce(player);
+                tablistRemovePacket.sendPacketOnce(player);
             } catch (InvocationTargetException e) {
                 e.printStackTrace();
             }
         });
 
         // Add player to new world players
-        List<Player> playersOnToWorld = Bukkit.getOnlinePlayers().stream().filter(player -> player.getWorld().equals(toWorld)).collect(Collectors.toList());
+        List<Player> playersOnToWorld = toWorld.getPlayers();
             playersOnToWorld.forEach(player -> {
                 try {
-                    new TablistAddPlayerPacket(evtPlayer).sendPacketOnce(player);
+                    tablistAddPacket.sendPacketOnce(player);
                 } catch (InvocationTargetException e) {
                     e.printStackTrace();
                 }
             });
-            //Remove all players from old world to event player
+
+
+        //Remove all players from old world to event player
         try {
-            new TablistRemovePlayerPacket(playersOnToWorld).sendPacketOnce(evtPlayer);
+            new TablistRemovePlayerPacket(playersOnFromWorld).sendPacketOnce(evtPlayer);
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         }

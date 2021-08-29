@@ -36,26 +36,26 @@ public class PacketListener extends PacketAdapter {
             if (this.configLoader.isTablistPerWorld()) {
                 for (PlayerInfoData data : playerInfoDataList) {
                     Player dataPlayer = Bukkit.getPlayer(data.getProfile().getName());
-                    //if (dataPlayer != null) { // real player (online one)
+                    if (dataPlayer != null) { // real player (online one)
                         if (dataPlayer.getWorld().equals(destinationPlayer.getWorld())) { // same world
                             if (this.configLoader.isRealLatency()) {
                                 newPlayerInfoDataList.add(data); // not edit the sent packet
                                 continue;
                             }
-                            PlayerInfoData newData = new PlayerInfoData(data.getProfile(), this.configLoader.getDefaultLatency().getLatency(), data.getGameMode(), data.getDisplayName()); // just edit latency
+                            PlayerInfoData newData = new PlayerInfoData(data.getProfile(), ConfigLoader.getDefaultLatency().getLatency(), data.getGameMode(), data.getDisplayName()); // just edit latency
                             newPlayerInfoDataList.add(newData);
                         }
-                    //}
-                    // fake one
+                    } else {
+                        newPlayerInfoDataList.add(data); // for fake players is not needed to check its ping
+                    }
 
                 }
             } else { // global tablist
                 for (PlayerInfoData data : playerInfoDataList) {
                     if (this.configLoader.isRealLatency()) {
                         newPlayerInfoDataList.add(data); // not edit the sent packet
-                        continue;
                     } else {
-                        PlayerInfoData newData = new PlayerInfoData(data.getProfile(), this.configLoader.getDefaultLatency().getLatency(), data.getGameMode(), data.getDisplayName()); // just edit latency
+                        PlayerInfoData newData = new PlayerInfoData(data.getProfile(), ConfigLoader.getDefaultLatency().getLatency(), data.getGameMode(), data.getDisplayName()); // just edit latency
                         newPlayerInfoDataList.add(newData);
                     }
                 }
@@ -68,7 +68,6 @@ public class PacketListener extends PacketAdapter {
             if(packetContainer.getPlayerInfoAction().read(0) == EnumWrappers.PlayerInfoAction.UPDATE_LATENCY ||
                     packetContainer.getPlayerInfoAction().read(0) == EnumWrappers.PlayerInfoAction.UPDATE_GAME_MODE) {
                 event.setCancelled(true);
-                return;
             }
         }
 
