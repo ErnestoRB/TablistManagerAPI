@@ -30,14 +30,55 @@ public class BukkitListener implements Listener {
 
     public BukkitListener(ConfigLoader configLoader) {
         this.configLoader = configLoader;
+        this.reloadChanges();
+    }
+
+    public void reloadChanges() {
+        // remove old fakePlayers
+        this.globalPacketList.forEach(fakePlayer -> Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
+            try {
+                fakePlayer.getTablistRemovePacket().sendPacketOnce(onlinePlayer);
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }));
+        this.worldPacketMap.forEach((world, fakePlayers) -> fakePlayers.forEach(fakePlayer -> world.getPlayers().forEach(player -> {
+            try {
+                fakePlayer.getTablistRemovePacket().sendPacketOnce(player);
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        })));
+        this.globalPacketList.clear();
+        this.worldPacketMap.clear();
         if(this.configLoader.isFillWithFakePlayers()){
             if(this.configLoader.isTablistPerWorld()) {
-                Bukkit.getWorlds().forEach(world -> worldPacketMap.put(world, generateFakePlayerList(this.configLoader.getFillUntil())));
+                Bukkit.getWorlds().forEach(world ->
+                {
+                    worldPacketMap.put(world, generateFakePlayerList(this.configLoader.getFillUntil() - world.getPlayers().size()));
+                    worldPacketMap.get(world).forEach(fakePlayer -> world.getPlayers().forEach(player -> {
+                        try {
+                            fakePlayer.getTablistAddPacket().sendPacketOnce(player);
+                        } catch (InvocationTargetException e) {
+                            e.printStackTrace();
+                        }
+                    }));
+                }
+                );
                 // generate a FakePlayerList for each world
             } else {
-                this.globalPacketList = generateFakePlayerList(this.configLoader.getFillUntil());
+                this.globalPacketList = generateFakePlayerList(this.configLoader.getFillUntil() - Bukkit.getOnlinePlayers().size());
+                globalPacketList.forEach(fakePlayer -> Bukkit.getOnlinePlayers().forEach(player -> {
+                    try {
+                        fakePlayer.getTablistAddPacket().sendPacketOnce(player);
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+                }));
+
             }
         }
+
     }
 
     @EventHandler

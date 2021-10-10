@@ -18,29 +18,34 @@ public final class TablistManager {
 
     private static final String configFileName = "tablistConfig.yml";
 
-    private File dataFolder;
-    private YamlConfiguration configFile;
-    private TablistHandler tablistHandler;
-    private ConfigLoader configLoader;
-    private JavaPlugin plugin;
+    private final BukkitListener listener;
+    private final TablistHandler tablistHandler;
+    private final ConfigLoader configLoader;
+    private final JavaPlugin plugin;
 
     public TablistManager(JavaPlugin plugin) {
         this.plugin = plugin;
         this.tablistHandler = new TablistHandler(plugin);
         ProtocolManager manager = ProtocolLibrary.getProtocolManager();
-        this.dataFolder = plugin.getDataFolder();
-        File file = new File(this.dataFolder.getPath(), configFileName);
+        File dataFolder = plugin.getDataFolder();
+        File file = new File(dataFolder.getPath(), configFileName);
         if(!file.exists()) {
             plugin.saveResource(configFileName, true);
-            System.out.println("Guardando informacion");
-            file = new File(this.dataFolder.getPath(), configFileName);
+            System.out.println("Guardando informacion de Tablist v"+ getPlugin().getDescription().getVersion());
+            file = new File(dataFolder.getPath(), configFileName);
         }
-        this.configFile = YamlConfiguration.loadConfiguration(file);
+        YamlConfiguration configFile = YamlConfiguration.loadConfiguration(file);
         System.out.println("Información cargada");
 
-        this.configLoader = new ConfigLoader(this.configFile);
+        this.configLoader = new ConfigLoader(configFile);
         manager.addPacketListener(new PacketListener(this, ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO));
-        plugin.getServer().getPluginManager().registerEvents(new BukkitListener(this.getConfigLoader()), plugin);
+        this.listener = new BukkitListener(this.configLoader);
+        plugin.getServer().getPluginManager().registerEvents(this.listener, plugin);
+    }
+
+    public void reload() {
+        this.configLoader.loadFields();
+        this.listener.reloadChanges();
     }
 
     public JavaPlugin getPlugin() {

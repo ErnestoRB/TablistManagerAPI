@@ -4,7 +4,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 public class ConfigLoader {
 
-    private FileConfiguration file;
+    private final FileConfiguration file;
 
     private boolean tablistPerWorld;
     private boolean realLatency = false;
@@ -24,9 +24,9 @@ public class ConfigLoader {
         this.tablistPerWorld = this.file.getBoolean("tablistPerWorld");
         this.realLatency = this.file.getBoolean("useRealLatency");
         if(this.file.get("defaultLatency")==null){
-            this.file.set("defaultLatency",getDefaultLatency());
+            this.file.set("defaultLatency",getDefaultLatency().toString());
         } else {
-            this.defaultLatency = (LatencyEnum) this.file.get("defaultLatency");
+            defaultLatency = LatencyEnum.valueOf((String) this.file.get("defaultLatency")) ;
         }
         this.fillWithFakePlayers = this.file.getBoolean("fillWithFakePlayers");
         this.fillUntil = this.file.getInt("fillUntil");
