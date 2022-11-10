@@ -1,4 +1,4 @@
-package me.ernestorb.tablistmanager.packets;
+package com.ernestorb.tablistmanager.packets;
 
 import org.bukkit.entity.Player;
 

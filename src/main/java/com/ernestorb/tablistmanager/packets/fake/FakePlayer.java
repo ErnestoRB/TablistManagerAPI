@@ -1,23 +1,30 @@
-package me.ernestorb.tablistmanager.packets.fake;
+package com.ernestorb.tablistmanager.packets.fake;
 
 import java.util.Random;
 import java.util.UUID;
 
+/**
+ * Represents a FakePlayer for tablist purposes.
+ */
 public class FakePlayer {
 
-    private UUID fakeUUID = UUID.randomUUID();
-    private String name;
-    private String displayName;
-    private TablistAddFakePlayerPacket tablistAddPacket;
-    private TablistRemoveFakePlayerPacket tablistRemovePacket;
+    private final TablistAddFakePlayerPacket tablistAddPacket;
+    private final TablistRemoveFakePlayerPacket tablistRemovePacket;
 
+    /**
+     * @param name Name used for sorting
+     * @param displayName Name used to show on the client
+     */
     public FakePlayer(String name, String displayName) {
-        this.name = name;
-        this.displayName = displayName;
-        this.tablistAddPacket = new TablistAddFakePlayerPacket(fakeUUID, this.name, this.displayName);
-        this.tablistRemovePacket = new TablistRemoveFakePlayerPacket(fakeUUID, this.name, this.displayName);
+        UUID fakeUUID = UUID.randomUUID();
+        this.tablistAddPacket = new TablistAddFakePlayerPacket(fakeUUID, name, displayName);
+        this.tablistRemovePacket = new TablistRemoveFakePlayerPacket(fakeUUID, name, displayName);
     }
 
+    /**
+     * Same as FakePlayer(name, "")
+     * @param name Name used for sorting
+     */
     public FakePlayer(String name) {
         this(name, " ");
     }
@@ -31,6 +38,10 @@ public class FakePlayer {
     }
 
 
+    /**
+     * Utility method for generate a FakePlayer that should be put on the tablist bottom.
+     * @return The Fakeplayer with a name that always start with "zz" + 8 [A-Za-z0] characters
+     */
     public static FakePlayer randomFakePlayer() {
         int leftLimit = 48;
         int rightLimit = 122;

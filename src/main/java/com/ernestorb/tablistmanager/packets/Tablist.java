@@ -1,8 +1,8 @@
-package me.ernestorb.tablistmanager.packets;
+package com.ernestorb.tablistmanager.packets;
 
 public class Tablist {
 
-    private PacketSender packet;
+    private final PacketSender packet;
 
     protected Tablist(TablistTemplate template) {
         this.packet = new TabListPacket(template);

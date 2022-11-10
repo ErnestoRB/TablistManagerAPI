@@ -1,4 +1,4 @@
-package me.ernestorb.tablistmanager.packets;
+package com.ernestorb.tablistmanager.packets;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -8,15 +8,18 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
-import me.ernestorb.tablistmanager.loaders.ConfigLoader;
+import com.ernestorb.tablistmanager.loaders.ConfigLoader;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+/**
+ * Packet used to include a player on the client tablist.
+ */
 public class TablistAddPlayerPacket implements PacketSender{
 
-    private PacketContainer packet;
+    private final PacketContainer packet;
     private final ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
 

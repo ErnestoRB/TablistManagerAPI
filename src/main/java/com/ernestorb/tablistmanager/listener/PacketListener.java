@@ -1,4 +1,4 @@
-package me.ernestorb.tablistmanager.listener;
+package com.ernestorb.tablistmanager.listener;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -7,8 +7,8 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
-import me.ernestorb.tablistmanager.TablistManager;
-import me.ernestorb.tablistmanager.loaders.ConfigLoader;
+import com.ernestorb.tablistmanager.TablistManager;
+import com.ernestorb.tablistmanager.loaders.ConfigLoader;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

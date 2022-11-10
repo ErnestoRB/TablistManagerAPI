@@ -1,22 +1,29 @@
-package me.ernestorb.tablistmanager.packets.fake;
+package com.ernestorb.tablistmanager.packets.fake;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
-import me.ernestorb.tablistmanager.packets.PacketSender;
+import com.ernestorb.tablistmanager.packets.PacketSender;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
-public class FakePlayerPackets implements PacketSender {
+public class FakePlayerPacket implements PacketSender {
 
+    private final UUID uuid;
+    private final String playerName;
+    private final String displayText;
     private PacketContainer packet;
     private final ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
-    protected FakePlayerPackets(UUID uuid, String playerName, String displayText) {}
+    protected FakePlayerPacket(UUID uuid, String playerName, String displayText) {
+        this.uuid = uuid;
+        this.playerName = playerName;
+        this.displayText = displayText;
+    }
 
     public void setPacket(PacketContainer packet) {
         this.packet = packet;
@@ -37,5 +44,17 @@ public class FakePlayerPackets implements PacketSender {
         String texture = "ewogICJ0aW1lc3RhbXAiIDogMTYyODM5MzQxMzM5MywKICAicHJvZmlsZUlkIiA6ICJjMGYzYjI3YTUwMDE0YzVhYjIxZDc5ZGRlMTAxZGZlMiIsCiAgInByb2ZpbGVOYW1lIiA6ICJDVUNGTDEzIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzhiZDlhNDVkNzI0ZDM5MDRiY2Y3M2RlMzI5MjdiMjU4MTQzOGY2MWVlZGJiZWQxZWMzOTU0ZWE4NWRhNjlmNzgiLAogICAgICAibWV0YWRhdGEiIDogewogICAgICAgICJtb2RlbCIgOiAic2xpbSIKICAgICAgfQogICAgfQogIH0KfQ==";
         profile.getProperties().put("textures", new WrappedSignedProperty("textures", texture,signature));
         return profile;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public String getDisplayText() {
+        return displayText;
     }
 }

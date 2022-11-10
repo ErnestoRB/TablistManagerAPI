@@ -1,8 +1,14 @@
 # TablistManagerAPI
-TablistManagerAPI for SpigotMC servers 
+TablistManagerAPI is a API for displaying content on tablists for SpigotMC servers 
 
-This API is useful to display custom Tablist header and footer, and also, display FakePlayers. You can achieve it by sending packets, and since packets are wrapped by ProtocolLib,
-it should be multiversion (only tested on spigot API 1.8.8). It has native support for displaying fakeplayers to fill the tablist, and tablistperworld support.
+## Features
+* Custom header and footer
+![Tablist with placeholders](placeholders.png)
+* Display fake players
+* Fill the tablist to a custom size (with fake players, outta box)
+![Tablist filled with fakePlayers](fakePlayers.png)
+* Per world tablist (Only players within the World can see each others)
+* Multiversion (or I think it should be since is built on top ProtocolLib)
 
 ## How can it be used ?
 First, you need to download the source, build jar, and then install it on your repository.

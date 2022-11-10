@@ -1,10 +1,10 @@
-package me.ernestorb.tablistmanager.packets;
+package com.ernestorb.tablistmanager.packets;
 
 public class TablistTemplate {
 
     private String header="";
     private String footer="";
-    private PlaceholderCallback placeholderCallback;
+    private final PlaceholderCallback placeholderCallback;
 
 
     public TablistTemplate(PlaceholderCallback placeholderCallback) {

@@ -1,10 +1,10 @@
-package me.ernestorb.tablistmanager.listener;
+package com.ernestorb.tablistmanager.listener;
 
-import me.ernestorb.tablistmanager.loaders.ConfigLoader;
-import me.ernestorb.tablistmanager.packets.PacketSender;
-import me.ernestorb.tablistmanager.packets.TablistAddPlayerPacket;
-import me.ernestorb.tablistmanager.packets.TablistRemovePlayerPacket;
-import me.ernestorb.tablistmanager.packets.fake.FakePlayer;
+import com.ernestorb.tablistmanager.packets.PacketSender;
+import com.ernestorb.tablistmanager.packets.TablistRemovePlayerPacket;
+import com.ernestorb.tablistmanager.packets.fake.FakePlayer;
+import com.ernestorb.tablistmanager.loaders.ConfigLoader;
+import com.ernestorb.tablistmanager.packets.TablistAddPlayerPacket;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -200,7 +200,7 @@ public class BukkitListener implements Listener {
 
             if(fromWorld.getPlayers().size() < this.configLoader.getFillUntil()){ // if under limit then add one!
                 FakePlayer addedFakePlayer = FakePlayer.randomFakePlayer(); // create new FakePlayer for old world
-                oldWorldFakePlayers.add(addedFakePlayer); // dont forget to put it on the list!!!!!!!!!!!
+                oldWorldFakePlayers.add(addedFakePlayer); // dont forget to put it on the list!!
                 fromWorld.getPlayers().forEach(player -> { // send packet to players from that world
                     try {
                         addedFakePlayer.getTablistAddPacket().sendPacketOnce(player);

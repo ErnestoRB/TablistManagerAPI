@@ -1,5 +1,8 @@
-package me.ernestorb.tablistmanager.loaders;
+package com.ernestorb.tablistmanager.loaders;
 
+/**
+ * Enum that represents the number of lines showed on the tablist. Used to build player's packets.
+ */
 public enum LatencyEnum {
     ZERO(-1),
     ONE(1001),
