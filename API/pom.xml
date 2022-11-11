@@ -4,21 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>com.ernestorb.tablistmanager</groupId>
-        <artifactId>TablistManager</artifactId>
+        <artifactId>tablistmanager</artifactId>
         <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>tablistmanager-api</artifactId>
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <name>GitHub ErnestoRB Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/ErnestoRB/TablistManagerAPI/</url>
-        </repository>
-    </distributionManagement>
-    <properties>
-        <maven.deploy.skip>false</maven.deploy.skip>
-    </properties>
+
     <build>
         <plugins>
             <plugin>

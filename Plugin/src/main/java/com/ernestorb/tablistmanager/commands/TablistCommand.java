@@ -1,6 +1,6 @@
 package com.ernestorb.tablistmanager.commands;
 
-import com.ernestorb.tablistmanager.Main;
+import com.ernestorb.tablistmanager.TablistManagerPlugin;
 import com.ernestorb.tablistmanager.TablistManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -11,7 +11,7 @@ public class TablistCommand implements CommandExecutor {
 
     private final TablistManager manager;
 
-    public TablistCommand(Main plugin) {
+    public TablistCommand(TablistManagerPlugin plugin) {
         this.manager = plugin.getManager();
     }
 

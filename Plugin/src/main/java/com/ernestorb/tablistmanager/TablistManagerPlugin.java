@@ -3,7 +3,7 @@ package com.ernestorb.tablistmanager;
 import com.ernestorb.tablistmanager.commands.TablistCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class Main extends JavaPlugin {
+public class TablistManagerPlugin extends JavaPlugin {
 
 
     private TablistManager manager;

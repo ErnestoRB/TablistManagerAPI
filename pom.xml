@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.ernestorb.tablistmanager</groupId>
-    <artifactId>TablistManager</artifactId>
+    <artifactId>tablistmanager</artifactId>
     <version>1.0.0</version>
     <modules>
         <module>API</module>
@@ -20,9 +20,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
-
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub ErnestoRB Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/ErnestoRB/TablistManagerAPI/</url>
+        </repository>
+    </distributionManagement>
     <repositories>
         <repository>
             <id>spigotmc-repo</id>
