@@ -16,6 +16,9 @@
             <url>https://maven.pkg.github.com/ErnestoRB/TablistManagerAPI/</url>
         </repository>
     </distributionManagement>
+    <properties>
+        <maven.deploy.skip>false</maven.deploy.skip>
+    </properties>
     <build>
         <plugins>
             <plugin>
