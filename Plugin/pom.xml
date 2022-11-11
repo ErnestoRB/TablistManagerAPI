@@ -8,7 +8,7 @@
         <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>TablistManagerPlugin</artifactId>
+    <artifactId>tablistmanager-plugin</artifactId>
     <packaging>jar</packaging>
     <properties>
         <java.version>11</java.version>
@@ -28,7 +28,7 @@
     <dependencies>
         <dependency>
             <groupId>com.ernestorb.tablistmanager</groupId>
-            <artifactId>TablistManagerAPI</artifactId>
+            <artifactId>tablistmanager-api</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>
