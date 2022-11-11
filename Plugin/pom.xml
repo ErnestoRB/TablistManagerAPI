@@ -16,6 +16,13 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub ErnestoRB Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/ErnestoRB/TablistManagerAPI/</url>
+        </repository>
+    </distributionManagement>
     <dependencies>
         <dependency>
             <groupId>com.ernestorb.tablistmanager</groupId>
