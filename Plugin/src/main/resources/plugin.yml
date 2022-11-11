@@ -1,0 +1,16 @@
+name: TablistManager
+version: '${project.version}'
+main: com.ernestorb.tablistmanager.Main
+api-version: 1.19
+prefix: TablistManager
+load: STARTUP
+loadbefore: [ ProtocolLib ]
+depend: [ ProtocolLib ]
+authors: [ Ernesto ]
+description: TablistManagerAPI example
+website: ernestorb.com
+commands:
+  tablist:
+    description: 'TablistManager root command'
+    usage: /<command> [reload]
+
