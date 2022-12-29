@@ -9,18 +9,19 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.ernestorb.tablistmanager.TablistManager;
 import com.ernestorb.tablistmanager.loaders.ConfigLoader;
+import com.ernestorb.tablistmanager.utils.VersionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PacketListener extends PacketAdapter {
+public class PlayerInfoListener extends PacketAdapter {
 
 
     private final ConfigLoader configLoader;
 
-    public PacketListener(TablistManager manager, ListenerPriority listenerPriority, PacketType... types) {
+    public PlayerInfoListener(TablistManager manager, ListenerPriority listenerPriority, PacketType... types) {
         super(manager.getPlugin(), listenerPriority, types);
         this.configLoader = manager.getConfigLoader();
     }
@@ -29,11 +30,18 @@ public class PacketListener extends PacketAdapter {
     public void onPacketSending(PacketEvent event) {
         Player destinationPlayer = event.getPlayer();
         PacketContainer packetContainer = event.getPacket();
+        if(VersionUtil.isNewTablist()) {
+            var action = packetContainer.getPlayerInfoActions().read(0);
+            if(action.contains(EnumWrappers.PlayerInfoAction.INITIALIZE_CHAT) || action.contains(EnumWrappers.PlayerInfoAction.UPDATE_LISTED)) {
+                return;
+            }
 
-        if(packetContainer.getPlayerInfoAction().read(0) == EnumWrappers.PlayerInfoAction.REMOVE_PLAYER) {
-            return;
+        } else {
+            if(packetContainer.getPlayerInfoAction().read(0) == EnumWrappers.PlayerInfoAction.REMOVE_PLAYER) {
+                return;
+            }
         }
-        List<PlayerInfoData> playerInfoDataList = packetContainer.getPlayerInfoDataLists().read(0); // sent data
+        List<PlayerInfoData> playerInfoDataList = packetContainer.getPlayerInfoDataLists().read(VersionUtil.isNewTablist() ? 1 : 0); // sent data;
         List<PlayerInfoData> newPlayerInfoDataList = new ArrayList<>(); // new data
         if (this.configLoader.isTablistPerWorld()) {
             for (PlayerInfoData data : playerInfoDataList) {
@@ -61,8 +69,7 @@ public class PacketListener extends PacketAdapter {
                 }
             }
         }
-        packetContainer.getPlayerInfoDataLists().write(0, newPlayerInfoDataList);
-
+            packetContainer.getPlayerInfoDataLists().write(VersionUtil.isNewTablist() ? 1 : 0, newPlayerInfoDataList);
 
     }
 
