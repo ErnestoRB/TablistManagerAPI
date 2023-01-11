@@ -9,7 +9,6 @@ import com.ernestorb.tablistmanager.loaders.ConfigLoader;
 import com.ernestorb.tablistmanager.utils.VersionUtil;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -54,7 +53,7 @@ public class TablistRemovePlayerPacket implements PacketSender{
     }
 
     @Override
-    public void sendPacketOnce(Player player) throws InvocationTargetException {
-        protocolManager.sendServerPacket(player,this.packet);
+    public void sendPacketOnce(Player player) {
+        protocolManager.sendServerPacket(player, this.packet);
     }
 }

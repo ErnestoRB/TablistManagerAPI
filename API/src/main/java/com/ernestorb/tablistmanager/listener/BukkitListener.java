@@ -16,7 +16,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +24,7 @@ public class BukkitListener implements Listener {
 
 
     private final ConfigLoader configLoader;
-    private final HashMap<World,List<FakePlayer>> worldPacketMap = new HashMap<>();
+    private final HashMap<World, List<FakePlayer>> worldPacketMap = new HashMap<>();
     private List<FakePlayer> globalPacketList = new ArrayList<>();
 
     public BukkitListener(ConfigLoader configLoader) {
@@ -35,46 +34,22 @@ public class BukkitListener implements Listener {
 
     public void reloadChanges() {
         // remove old fakePlayers
-        this.globalPacketList.forEach(fakePlayer -> Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
-            try {
-                fakePlayer.getTablistRemovePacket().sendPacketOnce(onlinePlayer);
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
-        }));
-        this.worldPacketMap.forEach((world, fakePlayers) -> fakePlayers.forEach(fakePlayer -> world.getPlayers().forEach(player -> {
-            try {
-                fakePlayer.getTablistRemovePacket().sendPacketOnce(player);
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
-        })));
+        this.globalPacketList.forEach(fakePlayer -> Bukkit.getOnlinePlayers().forEach(onlinePlayer -> fakePlayer.getTablistRemovePacket().sendPacketOnce(onlinePlayer)));
+        this.worldPacketMap.forEach((world, fakePlayers) -> fakePlayers.forEach(fakePlayer -> world.getPlayers().forEach(player -> fakePlayer.getTablistRemovePacket().sendPacketOnce(player))));
         this.globalPacketList.clear();
         this.worldPacketMap.clear();
-        if(this.configLoader.isFillWithFakePlayers()){
-            if(this.configLoader.isTablistPerWorld()) {
+        if (this.configLoader.isFillWithFakePlayers()) {
+            if (this.configLoader.isTablistPerWorld()) {
                 Bukkit.getWorlds().forEach(world ->
-                {
-                    worldPacketMap.put(world, generateFakePlayerList(this.configLoader.getFillUntil() - world.getPlayers().size()));
-                    worldPacketMap.get(world).forEach(fakePlayer -> world.getPlayers().forEach(player -> {
-                        try {
-                            fakePlayer.getTablistAddPacket().sendPacketOnce(player);
-                        } catch (InvocationTargetException e) {
-                            e.printStackTrace();
+                        {
+                            worldPacketMap.put(world, generateFakePlayerList(this.configLoader.getFillUntil() - world.getPlayers().size()));
+                            worldPacketMap.get(world).forEach(fakePlayer -> world.getPlayers().forEach(player -> fakePlayer.getTablistAddPacket().sendPacketOnce(player)));
                         }
-                    }));
-                }
                 );
                 // generate a FakePlayerList for each world
             } else {
                 this.globalPacketList = generateFakePlayerList(this.configLoader.getFillUntil() - Bukkit.getOnlinePlayers().size());
-                globalPacketList.forEach(fakePlayer -> Bukkit.getOnlinePlayers().forEach(player -> {
-                    try {
-                        fakePlayer.getTablistAddPacket().sendPacketOnce(player);
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
-                }));
+                globalPacketList.forEach(fakePlayer -> Bukkit.getOnlinePlayers().forEach(player -> fakePlayer.getTablistAddPacket().sendPacketOnce(player)));
 
             }
         }
@@ -82,91 +57,60 @@ public class BukkitListener implements Listener {
     }
 
     @EventHandler
-    public void onWorldLoad(WorldLoadEvent event){
-        if(this.configLoader.isFillWithFakePlayers() && this.configLoader.isTablistPerWorld()) {
+    public void onWorldLoad(WorldLoadEvent event) {
+        if (this.configLoader.isFillWithFakePlayers() && this.configLoader.isTablistPerWorld()) {
             this.worldPacketMap.put(event.getWorld(), generateFakePlayerList(this.configLoader.getFillUntil()));
         }
     }
 
     @EventHandler
-    public void onWorldUnload(WorldUnloadEvent event){
-        if(this.configLoader.isTablistPerWorld() && this.configLoader.isFillWithFakePlayers()) {
+    public void onWorldUnload(WorldUnloadEvent event) {
+        if (this.configLoader.isTablistPerWorld() && this.configLoader.isFillWithFakePlayers()) {
             this.worldPacketMap.remove(event.getWorld());
         }
     }
 
     @EventHandler
-    public void onPlayerJoinEventForFakePlayerPurposes(PlayerJoinEvent event){
+    public void onPlayerJoinEventForFakePlayerPurposes(PlayerJoinEvent event) {
         Player p = event.getPlayer();
         World world = p.getWorld();
-        if(this.configLoader.isFillWithFakePlayers() ){
-            if(this.configLoader.isTablistPerWorld()){
-                List<FakePlayer> fakePlayers =  this.worldPacketMap.get(world);
-                if(fakePlayers.size()==0) return; // No left fake players to show
+        if (this.configLoader.isFillWithFakePlayers()) {
+            if (this.configLoader.isTablistPerWorld()) {
+                List<FakePlayer> fakePlayers = this.worldPacketMap.get(world);
+                if (fakePlayers.size() == 0) return; // No left fake players to show
                 FakePlayer removedFakePlayer = fakePlayers.remove(0); // remove one from new World
                 world.getPlayers().forEach(player -> {
-                    try {
-                        removedFakePlayer.getTablistRemovePacket().sendPacketOnce(player); // remove fakeplayer from players
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
+                    removedFakePlayer.getTablistRemovePacket().sendPacketOnce(player); // remove fakeplayer from players
                 });
                 fakePlayers.forEach(fakePlayer -> {
-                    try {
-                        fakePlayer.getTablistAddPacket().sendPacketOnce(p); // send fake players to event player
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
+                    fakePlayer.getTablistAddPacket().sendPacketOnce(p); // send fake players to event player
                 });
             } else {
-                if(this.globalPacketList.size()==0)  return;
+                if (this.globalPacketList.size() == 0) return;
                 FakePlayer removedFakePlayer = this.globalPacketList.remove(0);
-                Bukkit.getOnlinePlayers().forEach(player -> {
-                    try {
-                        removedFakePlayer.getTablistRemovePacket().sendPacketOnce(player);
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
-                });
-                this.globalPacketList.forEach(fakePlayer -> {
-                    try {
-                        fakePlayer.getTablistAddPacket().sendPacketOnce(p);
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
-                });
+                Bukkit.getOnlinePlayers().forEach(player -> removedFakePlayer.getTablistRemovePacket().sendPacketOnce(player));
+                this.globalPacketList.forEach(fakePlayer -> fakePlayer.getTablistAddPacket().sendPacketOnce(p));
             }
         }
     }
 
     @EventHandler
-    public void onPlayerLeaveEventForFakePlayerPurposes(PlayerQuitEvent event){
+    public void onPlayerLeaveEventForFakePlayerPurposes(PlayerQuitEvent event) {
         Player p = event.getPlayer();
         World world = p.getWorld();
-        if(this.configLoader.isFillWithFakePlayers()){
-            if(this.configLoader.isTablistPerWorld()) {
-                List<FakePlayer> fakePlayers =  this.worldPacketMap.get(world);
-                if(world.getPlayers().size()-1 >= this.configLoader.getFillUntil()) return; // if its above limit then don't add any fake player
+        if (this.configLoader.isFillWithFakePlayers()) {
+            if (this.configLoader.isTablistPerWorld()) {
+                List<FakePlayer> fakePlayers = this.worldPacketMap.get(world);
+                if (world.getPlayers().size() - 1 >= this.configLoader.getFillUntil())
+                    return; // if its above limit then don't add any fake player
                 FakePlayer newFakePlayer = FakePlayer.randomFakePlayer();
                 fakePlayers.add(newFakePlayer);
-                world.getPlayers().forEach(player -> {
-                    try {
-                        newFakePlayer.getTablistAddPacket().sendPacketOnce(player);
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
-                });
+                world.getPlayers().forEach(player -> newFakePlayer.getTablistAddPacket().sendPacketOnce(player));
             } else {
-                if(Bukkit.getOnlinePlayers().size()-1 >= this.configLoader.getFillUntil()) return;
+                if (Bukkit.getOnlinePlayers().size() - 1 >= this.configLoader.getFillUntil()) return;
                 FakePlayer newFakePlayer = FakePlayer.randomFakePlayer();
                 this.globalPacketList.add(newFakePlayer);
-                Bukkit.getOnlinePlayers().forEach(player -> {
-                    try {
-                        newFakePlayer.getTablistAddPacket().sendPacketOnce(player);
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
-                });
+                Bukkit.getOnlinePlayers().forEach(player -> newFakePlayer.getTablistAddPacket().sendPacketOnce(player));
             }
         }
     }
@@ -177,55 +121,38 @@ public class BukkitListener implements Listener {
         Player evtPlayer = evt.getPlayer();
         World fromWorld = evt.getFrom();
         World toWorld = evtPlayer.getWorld();
-        if(this.configLoader.isTablistPerWorld() && this.configLoader.isFillWithFakePlayers()) {
+        if (this.configLoader.isTablistPerWorld() && this.configLoader.isFillWithFakePlayers()) {
             List<FakePlayer> oldWorldFakePlayers = this.worldPacketMap.get(fromWorld); // old world
             List<FakePlayer> newWorldfakePlayers = this.worldPacketMap.get(toWorld); // new world
-            if(newWorldfakePlayers.size()!=0){
+            if (newWorldfakePlayers.size() != 0) {
                 FakePlayer removedFakePlayer = newWorldfakePlayers.remove(0); // remove one from new World
                 toWorld.getPlayers().forEach(player -> { // update tablist from new world players
-                    try {
-                        removedFakePlayer.getTablistRemovePacket().sendPacketOnce(player);
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
+                    removedFakePlayer.getTablistRemovePacket().sendPacketOnce(player);
                 });
                 newWorldfakePlayers.forEach(fakePlayer -> { // add FakePlayers of new World to event Player
-                    try {
-                        fakePlayer.getTablistAddPacket().sendPacketOnce(evtPlayer);
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
+                    fakePlayer.getTablistAddPacket().sendPacketOnce(evtPlayer);
                 });
             }
 
-            if(fromWorld.getPlayers().size() < this.configLoader.getFillUntil()){ // if under limit then add one!
+            if (fromWorld.getPlayers().size() < this.configLoader.getFillUntil()) { // if under limit then add one!
                 FakePlayer addedFakePlayer = FakePlayer.randomFakePlayer(); // create new FakePlayer for old world
                 oldWorldFakePlayers.add(addedFakePlayer); // dont forget to put it on the list!!
                 fromWorld.getPlayers().forEach(player -> { // send packet to players from that world
-                    try {
-                        addedFakePlayer.getTablistAddPacket().sendPacketOnce(player);
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
+                    addedFakePlayer.getTablistAddPacket().sendPacketOnce(player);
                 });
             }
 
             oldWorldFakePlayers.forEach(fakePlayer -> {// remove FakePlayers of old World to event Player
-                try {
-                    fakePlayer.getTablistRemovePacket().sendPacketOnce(evtPlayer);
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                }
+                fakePlayer.getTablistRemovePacket().sendPacketOnce(evtPlayer);
             });
 
         }
     }
 
 
-
     @EventHandler
     public void onPlayerChangeWorldEvent(PlayerChangedWorldEvent evt) {
-        if(!this.configLoader.isTablistPerWorld()){
+        if (!this.configLoader.isTablistPerWorld()) {
             return;
         }
         Player evtPlayer = evt.getPlayer();
@@ -237,45 +164,24 @@ public class BukkitListener implements Listener {
 
         // Remove player to old world players
         List<Player> playersOnFromWorld = fromWorld.getPlayers();
-        playersOnFromWorld.forEach(player -> {
-            try {
-                tablistRemovePacket.sendPacketOnce(player);
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
-        });
+        playersOnFromWorld.forEach(tablistRemovePacket::sendPacketOnce);
 
         // Add player to new world players
         List<Player> playersOnToWorld = toWorld.getPlayers();
-            playersOnToWorld.forEach(player -> {
-                try {
-                    tablistAddPacket.sendPacketOnce(player);
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-            });
+        playersOnToWorld.forEach(tablistAddPacket::sendPacketOnce);
 
 
         //Remove all players from old world to event player
-        try {
-            new TablistRemovePlayerPacket(playersOnFromWorld).sendPacketOnce(evtPlayer);
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
+        new TablistRemovePlayerPacket(playersOnFromWorld).sendPacketOnce(evtPlayer);
 
         // Add new world players to event player
-        try {
-            new TablistAddPlayerPacket(playersOnToWorld).sendPacketOnce(evtPlayer);
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
-
+        new TablistAddPlayerPacket(playersOnToWorld).sendPacketOnce(evtPlayer);
 
     }
 
-    private static List<FakePlayer> generateFakePlayerList(int size){
+    private static List<FakePlayer> generateFakePlayerList(int size) {
         List<FakePlayer> list = new ArrayList<>();
-        for(int i=0;i<size;i++){
+        for (int i = 0; i < size; i++) {
             list.add(FakePlayer.randomFakePlayer());
         }
         return list;
