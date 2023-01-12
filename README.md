@@ -19,11 +19,27 @@ All of the API and:
 You can use the tablistmanager-api package by itself (suitable for customization), or use the tablistmanager-plugin.
 
 ### Installing using Maven
-The API and the Plugin are published to GitHub Packages.
+The API and the Plugin are published to GitHub Packages. In order to access the packages you should follow this steps:
 
 1. First, you should [create a personal access token](https://docs.github.com/es/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) 
 2. Then, authenticate with that token on your settings.xml, as described [here](https://docs.github.com/es/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages)
-3. Finally, add the dependency you want to your project POM.
+```xml
+<servers>
+  <server>
+    <id>github</id>
+    <username>YOUR_GH_USERNAME</username>
+    <password>YOUR_TOKEN</password>
+  </server>
+</servers>
+```
+3. Add the repository (to your settings.xml profile or to your project pom.xml)
+```xml
+<repository>
+  <id>github</id>
+  <url>https://maven.pkg.github.com/ErnestoRB/TablistManagerAPI/</url>
+</repository>
+```
+4. Finally, add the dependency you need to your project POM (API or Plugin).
 
 ```xml
 <dependencies>
@@ -31,7 +47,7 @@ The API and the Plugin are published to GitHub Packages.
    <dependency>
       <groupId>com.ernestorb.tablistmanager</groupId>
       <artifactId>tablistmanager-api</artifactId>
-      <version>1.0.0</version>
+      <version>1.1.0</version>
    </dependency>
    ...
 </dependencies>
@@ -43,7 +59,7 @@ The API and the Plugin are published to GitHub Packages.
    <dependency>
       <groupId>com.ernestorb.tablistmanager</groupId>
       <artifactId>tablistmanager-plugin</artifactId>
-      <version>1.0.0</version>
+      <version>1.1.0</version>
    </dependency>
    ...
 </dependencies>
@@ -51,7 +67,7 @@ The API and the Plugin are published to GitHub Packages.
 
 ### Developing using the API
 1. Declare the tablistmanager-api dependency to your plugin POM
-2. Create an instance of TablistManager. There may be just one instance of this class, having more can lead to issues.
+2. Create an instance of TablistManager. There must be just one instance of this class, having more can lead to issues.
 ```java
   TablistManager manager = new TablistManager(this);
 ```
@@ -60,7 +76,6 @@ The API and the Plugin are published to GitHub Packages.
 loadbefore: [ ProtocolLib ]
 depend: [ ProtocolLib ]
 ```
-
 
 ### Developing using the plugin
 Download the latest plugin available. (Releases tab)

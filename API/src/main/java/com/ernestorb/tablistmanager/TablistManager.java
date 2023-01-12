@@ -5,9 +5,11 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.ernestorb.tablistmanager.listener.BukkitListener;
-import com.ernestorb.tablistmanager.listener.PacketListener;
+import com.ernestorb.tablistmanager.listener.PlayerInfoListener;
+import com.ernestorb.tablistmanager.listener.PlayerRemoveListener;
 import com.ernestorb.tablistmanager.loaders.ConfigLoader;
 import com.ernestorb.tablistmanager.packets.TablistHandler;
+import com.ernestorb.tablistmanager.utils.VersionUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -41,7 +43,10 @@ public final class TablistManager {
         this.configLoader = new ConfigLoader(this.yamlConfig);
         this.listener = new BukkitListener(this.configLoader);
         ProtocolManager manager = ProtocolLibrary.getProtocolManager();
-        manager.addPacketListener(new PacketListener(this, ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO));
+        if(VersionUtil.isNewTablist()) {
+            manager.addPacketListener(new PlayerRemoveListener(this, ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO_REMOVE));
+        }
+        manager.addPacketListener(new PlayerInfoListener(this, ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO));
         plugin.getServer().getPluginManager().registerEvents(this.listener, plugin);
     }
 
