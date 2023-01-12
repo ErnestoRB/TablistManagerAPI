@@ -13,6 +13,6 @@ public class TablistUtil {
         var worldName = p.getWorld().getName();
         var header = configLoader.getWorldHeader(worldName);
         var footer = configLoader.getWorldFooter(worldName);
-        manager.getTablistHandler().setPlayerTablist(p, TablistTemplate.fromLists(header.orElse(new ArrayList<>()), footer.orElse(new ArrayList<>())));
+        manager.getTablistHandler().setPlayerTablist(p, TablistTemplate.fromLists(header.orElse(configLoader.getDefaultHeader()), footer.orElse(configLoader.getDefaultFooter())));
     }
 }
