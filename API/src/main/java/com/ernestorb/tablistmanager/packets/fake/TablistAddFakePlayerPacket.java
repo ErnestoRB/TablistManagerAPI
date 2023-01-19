@@ -17,7 +17,7 @@ public class TablistAddFakePlayerPacket extends FakePlayerPacket {
         WrappedGameProfile gameProfile = new WrappedGameProfile(uuid, playerName);
         PacketContainer packet = this.getProtocolManager().createPacket(PacketType.Play.Server.PLAYER_INFO);
         setPacket(packet);
-        var data = new PlayerInfoData(FakePlayerPacket.changeGameProfileSkin(gameProfile), ConfigLoader.getDefaultLatency().getLatency() + 100, EnumWrappers.NativeGameMode.CREATIVE, WrappedChatComponent.fromText(displayText));
+        var data = new PlayerInfoData(FakePlayerPacket.changeGameProfileSkin(gameProfile), ConfigLoader.getDefaultLatency().getLatency() + 1, EnumWrappers.NativeGameMode.CREATIVE, WrappedChatComponent.fromText(displayText));
         var infoLists = Collections.singletonList(data);
         if (VersionUtil.isNewTablist()) {
             EnumSet<EnumWrappers.PlayerInfoAction> actions = EnumSet.of(

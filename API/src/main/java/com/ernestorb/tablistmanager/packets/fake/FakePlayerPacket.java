@@ -8,7 +8,6 @@ import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.ernestorb.tablistmanager.packets.PacketSender;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
 public class FakePlayerPacket implements PacketSender {
@@ -34,8 +33,8 @@ public class FakePlayerPacket implements PacketSender {
     }
 
     @Override
-    public void sendPacketOnce(Player player) throws InvocationTargetException {
-        this.protocolManager.sendServerPacket(player,this.packet);
+    public void sendPacketOnce(Player player) {
+        this.protocolManager.sendServerPacket(player, this.packet);
     }
 
     public static WrappedGameProfile changeGameProfileSkin(WrappedGameProfile profile)

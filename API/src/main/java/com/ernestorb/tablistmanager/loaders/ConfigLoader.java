@@ -1,13 +1,17 @@
 package com.ernestorb.tablistmanager.loaders;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
 
 /**
- * Represents the in-memory config from the config file.
+ * Represents the in-memory configuration for the API features.
  */
 public class ConfigLoader {
 
     private FileConfiguration fileConfiguration;
+    private File path;
 
     private boolean tablistPerWorld;
     private boolean realLatency = false;
@@ -17,34 +21,52 @@ public class ConfigLoader {
 
     /**
      * @param config The config file to read values from.
+     * @deprecated
      */
+    @Deprecated
     public ConfigLoader(FileConfiguration config) {
-        if(config==null){
+        if (config == null) {
             throw new NullPointerException("Config file couldn't be loaded! :(");
         }
         this.fileConfiguration = config;
         this.loadFields();
     }
 
+    public ConfigLoader(File path) {
+        this.path = path;
+        this.newConfigFile();
+        this.loadFields();
+    }
+
     /**
      * Establishes the configuration file to be used for the next loadFields()
-     * @param fileConfiguration
+     *
+     * @param fileConfiguration The previously loaded file
+     * @deprecated
      */
+    @Deprecated
     public void setFileConfiguration(FileConfiguration fileConfiguration) {
         this.fileConfiguration = fileConfiguration;
     }
 
+    private void newConfigFile() {
+        if (this.path == null) return;
+        this.fileConfiguration = YamlConfiguration.loadConfiguration(this.path);
+    }
+
+    public void reloadFields() {
+        if (this.path == null) return;
+        this.newConfigFile();
+        this.loadFields();
+    }
+
     /**
-     * (Re)loads the values from the config file
+     * Loads the values from the config file
      */
     public void loadFields() {
         this.tablistPerWorld = this.fileConfiguration.getBoolean("tablistPerWorld");
         this.realLatency = this.fileConfiguration.getBoolean("useRealLatency");
-        if(this.fileConfiguration.get("defaultLatency")==null){
-            this.fileConfiguration.set("defaultLatency",getDefaultLatency().toString());
-        } else {
-            defaultLatency = LatencyEnum.valueOf((String) this.fileConfiguration.get("defaultLatency")) ;
-        }
+        defaultLatency = LatencyEnum.valueOf(this.fileConfiguration.getString("defaultLatency", "ONE"));
         this.fillWithFakePlayers = this.fileConfiguration.getBoolean("fillWithFakePlayers");
         this.fillUntil = this.fileConfiguration.getInt("fillUntil");
     }

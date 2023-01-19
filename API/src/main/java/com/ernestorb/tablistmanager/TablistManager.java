@@ -10,13 +10,12 @@ import com.ernestorb.tablistmanager.listener.PlayerRemoveListener;
 import com.ernestorb.tablistmanager.loaders.ConfigLoader;
 import com.ernestorb.tablistmanager.packets.TablistHandler;
 import com.ernestorb.tablistmanager.utils.VersionUtil;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
 
 /**
- * Represents the entrypoint for the API.
+ * Entrypoint for the API.
  */
 public final class TablistManager {
 
@@ -28,7 +27,6 @@ public final class TablistManager {
     private final JavaPlugin plugin;
 
     private File configFile;
-    private YamlConfiguration yamlConfig;
 
     /**
      * Entrypoint of the API.
@@ -39,8 +37,7 @@ public final class TablistManager {
         this.plugin = plugin;
         this.tablistHandler = new TablistHandler(plugin);
         generateConfigFile();
-        createYamlConfig();
-        this.configLoader = new ConfigLoader(this.yamlConfig);
+        this.configLoader = new ConfigLoader(this.configFile);
         this.listener = new BukkitListener(this.configLoader);
         ProtocolManager manager = ProtocolLibrary.getProtocolManager();
         if(VersionUtil.isNewTablist()) {
@@ -78,15 +75,10 @@ public final class TablistManager {
 
     public void reload() {
         this.generateConfigFile();
-        this.createYamlConfig();
-        this.configLoader.setFileConfiguration(this.yamlConfig);
-        this.configLoader.loadFields();
+        this.configLoader.reloadFields();
         this.listener.reloadChanges();
     }
 
-    private void createYamlConfig() {
-        this.yamlConfig = YamlConfiguration.loadConfiguration(this.configFile);
-    }
 
     public JavaPlugin getPlugin() {
         return plugin;

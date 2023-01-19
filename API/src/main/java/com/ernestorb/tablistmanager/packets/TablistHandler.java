@@ -5,20 +5,24 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 /**
- * The brain to map a Player to a Tablist.
+ * Composes the API to map a TablistTemplate to a player.
+ * Internally, a Task is created and is dispatched every second by default,
+ * but it is customizable via constructor.
  */
 public class TablistHandler {
 
     private final HashMap<Player, Tablist> tablistHashMap = new HashMap<>();
     private final JavaPlugin plugin;
+
+    private long updatePeriod = 20;
     private BukkitTask task;
 
     /**
      * Internally starts a Task every 20 ticks to send a Tablist packet
+     *
      * @param plugin The plugin to attach the task for
      */
     public TablistHandler(JavaPlugin plugin) {
@@ -26,12 +30,17 @@ public class TablistHandler {
         start();
     }
 
+    public TablistHandler(JavaPlugin plugin, long updatePeriod) {
+        this(plugin);
+        this.updatePeriod = updatePeriod;
+    }
+
 
     /**
      * Stop sending packets. No more updates would happen.
      */
     public void stop() {
-        if(this.task != null) {
+        if (this.task != null) {
             this.task.cancel();
             this.task = null;
         }
@@ -47,15 +56,9 @@ public class TablistHandler {
         this.task = new BukkitRunnable() {
             @Override
             public void run() {
-                tablistHashMap.forEach((player, tablist) -> {
-                    try {
-                        tablist.getPacket().sendPacketOnce(player);
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
-                });
+                tablistHashMap.forEach((player, tablist) -> tablist.getPacket().sendPacketOnce(player));
             }
-        }.runTaskTimer(this.plugin,0,20); // every second
+        }.runTaskTimer(this.plugin, 0, updatePeriod); // every second
     }
 
 
