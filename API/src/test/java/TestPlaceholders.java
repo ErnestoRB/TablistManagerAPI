@@ -30,6 +30,6 @@ public class TestPlaceholders {
         var tablist = TablistTemplate.empty();
         assertNotNull(placeholders);
         placeholders.callback(tablist, player);
-        assertEquals("Hola %algo%", tablist.getHeader());
+        assertEquals("Hola Ernesto", tablist.getHeader());
     }
 }
