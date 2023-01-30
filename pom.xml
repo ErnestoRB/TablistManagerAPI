@@ -6,7 +6,7 @@
 
     <groupId>com.ernestorb.tablistmanager</groupId>
     <artifactId>tablistmanager</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
     <modules>
         <module>API</module>
         <module>Plugin</module>
@@ -60,6 +60,18 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>5.9.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>4.6.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>4.6.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

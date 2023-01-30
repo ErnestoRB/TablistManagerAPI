@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.ernestorb.tablistmanager.listener.BukkitListener;
+import com.ernestorb.tablistmanager.listener.NamedEntityListener;
 import com.ernestorb.tablistmanager.listener.PlayerInfoListener;
 import com.ernestorb.tablistmanager.listener.PlayerRemoveListener;
 import com.ernestorb.tablistmanager.loaders.ConfigLoader;
@@ -41,9 +42,10 @@ public final class TablistManager {
         this.listener = new BukkitListener(this.configLoader);
         ProtocolManager manager = ProtocolLibrary.getProtocolManager();
         if(VersionUtil.isNewTablist()) {
-            manager.addPacketListener(new PlayerRemoveListener(this, ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO_REMOVE));
+            manager.addPacketListener(new PlayerRemoveListener(this,ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO_REMOVE));
         }
         manager.addPacketListener(new PlayerInfoListener(this, ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO));
+        manager.addPacketListener(new NamedEntityListener(this, ListenerPriority.NORMAL, PacketType.Play.Server.NAMED_ENTITY_SPAWN));
         plugin.getServer().getPluginManager().registerEvents(this.listener, plugin);
     }
 

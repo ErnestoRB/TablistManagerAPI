@@ -31,7 +31,7 @@ public class PlaceholdersUtil {
 
     /**
      * @param args Placeholders to compose, being the right-most the one with more priority
-     * @return A new callback that mixes first and second placeholders
+     * @return A new callback that internally calls the arguments in the order provided
      */
     public static PlaceholderCallback compose(PlaceholderCallback... args) {
         return ((tablistTemplate, player) -> {

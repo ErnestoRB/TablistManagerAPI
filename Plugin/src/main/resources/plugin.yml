@@ -1,7 +1,7 @@
 name: TablistManager
 version: '${project.version}'
 main: com.ernestorb.tablistmanager.plugin.TablistManagerPlugin
-api-version: 1.19
+api-version: 1.13
 prefix: TablistManager
 load: STARTUP
 loadbefore: [ ProtocolLib ]
