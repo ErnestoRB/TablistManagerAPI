@@ -56,7 +56,7 @@ public class PlayerInfoListener extends PacketAdapter {
                         newPlayerInfoDataList.add(newData);
                     }
                 } else {
-                    newPlayerInfoDataList.add(data); // for fake players is not needed to check its ping
+                    newPlayerInfoDataList.add(data); // for fake players is not needed to modify its ping
                 }
             }
         } else { // global tablist

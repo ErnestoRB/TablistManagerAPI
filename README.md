@@ -1,7 +1,6 @@
 # TablistManagerAPI
 
 TablistManagerAPI is a API for displaying content on tablists for SpigotMC servers. Depends on ProtocolLib.
-Actually, this repo contains two packages: the API, and a plugin which depends on the API.
 
 ## Features of the plugin
 
@@ -104,22 +103,43 @@ if(pl != null && pl instanceof  TablistManagerPlugin) {
 ## Code examples
 
 ### Displaying header and footer
-
-Get the tablist handler attached to any instance of TablistManager, define a template and send it to the player you want.
+Get the TablistHandler attached to TablistManager (see [api usage](#developing-using-the-api) or the [plugin usage](#developing-using-the-plugin), define a template and send it to the player you want.
 
 ```java
-  TablistManager manager = ...
-  Player p = ...
-  TablistTemplate myTemplate = new TablistTemplate((tablistTemplate,player) => {
-    // this callback is used to update info every 20 ticks!
-    tablistTemplate.setHeader("Hello!\nThis is great %player_name%\nThis is my %new_placeholder%")
-    tablistTemplate.setFooter("§cYou are on %player_world%") // built in player placeholders
-    tablistTemplate.setHeader(tablistTemplate.getHeader().replaceAll("%new_placeholder%", player.getGameMode().toString());
-  });
-  manager.getTablistHandler().setPlayerTablist(player, myTemplate);
-  ```
+public class HelloTablist extends TablistTemplate {
 
-### Adding slots
+    private HelloTablist() {
+        super((tablistTemplate, player) -> {
+            // define new custom placeholder
+            tablistTemplate.setHeader(tablistTemplate.getHeader().replaceAll("%new_placeholder%", player.getGameMode().toString()));
+        });
+        this.setHeader("&aHello!\n&eThis API is great %player_name%\nThis is my %new_placeholder% (gamemode)");
+        this.setFooter("&cYou are on %player_world%"); // built in player placeholders
+    }
+
+    public static HelloTablist getInstance() {
+        return new HelloTablist();
+    }
+}
+```
+
+This is how would look using the plugin.
+
+```java
+Plugin pl = this.getServer().getPluginManager().getPlugin("TablistManager");
+if(pl != null && pl instanceof  TablistManagerPlugin) {
+    this.manager = ((TablistManagerPlugin)pl).getManager();
+    TablistHandler handler = this.manager.getTablistHandler();
+    Player p = ...;
+    handler.setPlayerTablist(player, HelloTablist.getInstance());
+} else {
+    this.getLogger().severe("Plugin cannot be loaded due lack of TablistManager plugin");
+    this.getPluginLoader().disablePlugin(this);
+    return;
+}
+```
+
+### Adding slots (or "fake players")
 If you want to display slots to a tablist, use the FakePlayers class.
 
 #### If you want a "empty" slot

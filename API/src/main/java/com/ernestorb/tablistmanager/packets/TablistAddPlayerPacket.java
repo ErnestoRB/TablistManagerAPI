@@ -38,7 +38,10 @@ public class TablistAddPlayerPacket implements PacketSender {
             EnumSet<EnumWrappers.PlayerInfoAction> actions = EnumSet.of(
                     EnumWrappers.PlayerInfoAction.ADD_PLAYER,
                     EnumWrappers.PlayerInfoAction.UPDATE_LATENCY,
-                    EnumWrappers.PlayerInfoAction.UPDATE_LISTED, EnumWrappers.PlayerInfoAction.UPDATE_DISPLAY_NAME);
+                    EnumWrappers.PlayerInfoAction.UPDATE_LISTED,
+                    EnumWrappers.PlayerInfoAction.UPDATE_DISPLAY_NAME,
+                    EnumWrappers.PlayerInfoAction.UPDATE_GAME_MODE,
+                    EnumWrappers.PlayerInfoAction.INITIALIZE_CHAT);
             this.packet.getPlayerInfoActions().write(0, actions);
             packet.getPlayerInfoDataLists().write(1, playerInfoDataList);
             return;

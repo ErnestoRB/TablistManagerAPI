@@ -4,7 +4,6 @@ import com.ernestorb.tablistmanager.packets.PacketSender;
 import com.ernestorb.tablistmanager.packets.TablistRemovePlayerPacket;
 import com.ernestorb.tablistmanager.packets.fake.FakePlayer;
 import com.ernestorb.tablistmanager.loaders.ConfigLoader;
-import com.ernestorb.tablistmanager.packets.TablistAddPlayerPacket;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -15,14 +14,12 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class BukkitListener implements Listener {
 
-
+    private static final Deque<Player> worldChanges = new ConcurrentLinkedDeque<>();
     private final ConfigLoader configLoader;
     private final HashMap<World, List<FakePlayer>> worldPacketMap = new HashMap<>();
     private List<FakePlayer> globalPacketList = new ArrayList<>();
@@ -116,6 +113,7 @@ public class BukkitListener implements Listener {
     }
 
 
+    // For filling the tablist with fake players
     @EventHandler
     public void onPlayerChangeWorldEventForFakePlayerPurposes(PlayerChangedWorldEvent evt) {
         Player evtPlayer = evt.getPlayer();
@@ -156,27 +154,14 @@ public class BukkitListener implements Listener {
             return;
         }
         Player evtPlayer = evt.getPlayer();
-        World fromWorld = evt.getFrom();
-        World toWorld = evt.getPlayer().getWorld();
-
+        worldChanges.add(evtPlayer);
+        World oldWorld = evt.getFrom();
         PacketSender tablistRemovePacket = new TablistRemovePlayerPacket(evtPlayer);
-        PacketSender tablistAddPacket = new TablistAddPlayerPacket(evtPlayer);
-
         // Remove player to old world players
-        List<Player> playersOnFromWorld = fromWorld.getPlayers();
-        playersOnFromWorld.forEach(tablistRemovePacket::sendPacketOnce);
-
-        // Add player to new world players
-        List<Player> playersOnToWorld = toWorld.getPlayers();
-        playersOnToWorld.forEach(tablistAddPacket::sendPacketOnce);
-
-
+        List<Player> oldWorldPlayers = oldWorld.getPlayers();
+        oldWorldPlayers.forEach(tablistRemovePacket::sendPacketOnce);
         //Remove all players from old world to event player
-        new TablistRemovePlayerPacket(playersOnFromWorld).sendPacketOnce(evtPlayer);
-
-        // Add new world players to event player
-        new TablistAddPlayerPacket(playersOnToWorld).sendPacketOnce(evtPlayer);
-
+        new TablistRemovePlayerPacket(oldWorldPlayers).sendPacketOnce(evtPlayer);
     }
 
     private static List<FakePlayer> generateFakePlayerList(int size) {
@@ -187,4 +172,7 @@ public class BukkitListener implements Listener {
         return list;
     }
 
+    public static Deque<Player> getWorldChanges() {
+        return worldChanges;
+    }
 }
