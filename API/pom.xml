@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.ernestorb.tablistmanager</groupId>
         <artifactId>tablistmanager</artifactId>
-        <version>1.2.1</version>
+        <version>1.2.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>tablistmanager-api</artifactId>

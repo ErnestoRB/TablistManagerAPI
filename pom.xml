@@ -6,7 +6,7 @@
 
     <groupId>com.ernestorb.tablistmanager</groupId>
     <artifactId>tablistmanager</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.2</version>
     <modules>
         <module>API</module>
         <module>Plugin</module>
