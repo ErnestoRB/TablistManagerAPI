@@ -1,6 +1,7 @@
 package com.ernestorb.tablistmanager.listener;
 
 import com.ernestorb.tablistmanager.packets.PacketSender;
+import com.ernestorb.tablistmanager.packets.TablistAddPlayerPacket;
 import com.ernestorb.tablistmanager.packets.TablistRemovePlayerPacket;
 import com.ernestorb.tablistmanager.packets.fake.FakePlayer;
 import com.ernestorb.tablistmanager.loaders.ConfigLoader;
@@ -154,14 +155,18 @@ public class BukkitListener implements Listener {
             return;
         }
         Player evtPlayer = evt.getPlayer();
-        worldChanges.add(evtPlayer);
         World oldWorld = evt.getFrom();
+        World newWorld = evtPlayer.getWorld();
         PacketSender tablistRemovePacket = new TablistRemovePlayerPacket(evtPlayer);
         // Remove player to old world players
         List<Player> oldWorldPlayers = oldWorld.getPlayers();
         oldWorldPlayers.forEach(tablistRemovePacket::sendPacketOnce);
         //Remove all players from old world to event player
         new TablistRemovePlayerPacket(oldWorldPlayers).sendPacketOnce(evtPlayer);
+        PacketSender tablistAddPacket = new TablistAddPlayerPacket(evtPlayer);
+        PacketSender tablistAddPacket2 = new TablistAddPlayerPacket(newWorld.getPlayers());
+        newWorld.getPlayers().forEach(tablistAddPacket::sendPacketOnce);
+        tablistAddPacket2.sendPacketOnce(evtPlayer);
     }
 
     private static List<FakePlayer> generateFakePlayerList(int size) {

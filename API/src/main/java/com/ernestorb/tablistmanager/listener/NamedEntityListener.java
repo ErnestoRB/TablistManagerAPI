@@ -36,14 +36,10 @@ public class NamedEntityListener extends PacketAdapter {
         var entityUUID = packet.getUUIDs().read(0);
         var packetPlayer = Bukkit.getPlayer(entityUUID);
         if (packetPlayer != null) {
-            if (BukkitListener.getWorldChanges().contains(targetPlayer) || BukkitListener.getWorldChanges().contains(packetPlayer)) {
-                PacketSender tablistAddPacket = new TablistAddPlayerPacket(packetPlayer);
-                PacketSender tablistAddPacket2 = new TablistAddPlayerPacket(targetPlayer);
-                tablistAddPacket.sendPacketOnce(targetPlayer);
-                tablistAddPacket2.sendPacketOnce(packetPlayer);
-                BukkitListener.getWorldChanges().remove(targetPlayer);
-                BukkitListener.getWorldChanges().remove(packetPlayer);
-            }
+            PacketSender tablistAddPacket = new TablistAddPlayerPacket(packetPlayer);
+            PacketSender tablistAddPacket2 = new TablistAddPlayerPacket(targetPlayer);
+            tablistAddPacket.sendPacketOnce(targetPlayer);
+            tablistAddPacket2.sendPacketOnce(packetPlayer);
         }
     }
 
